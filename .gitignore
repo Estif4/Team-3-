@@ -6,6 +6,7 @@ node_modules/
 dist/
 dist-ssr/
 build/
+*.tsbuildinfo
 
 # Environment and secrets (CRITICAL: Do not commit secrets)
 .env
