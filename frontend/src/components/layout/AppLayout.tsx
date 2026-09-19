@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
-import Header from "./components/layout/Header";
-import Sidebar, { type Page } from "./components/layout/Sidebar";
+import Header from "./Header";
+import Sidebar, { type Page } from "./Sidebar";
 
 type AppLayoutProps = {
   children: ReactNode;
