@@ -1,0 +1,64 @@
+@api = http://localhost:8000/api
+@tokenA = PASTE_ALICE_TOKEN
+@tokenB = PASTE_BOB_TOKEN
+@bobId = PASTE_BOB_ID
+
+### 1. Alice creates a board (expect 201)
+# @name createBoard
+POST {{api}}/boards
+Authorization: Bearer {{tokenA}}
+Content-Type: application/json
+
+{ "title": "Website redesign", "description": "Q4 launch" }
+
+###
+@boardId = {{createBoard.response.body.id}}
+
+### 2. Bob cannot see it yet (expect 404)
+GET {{api}}/boards/{{boardId}}
+Authorization: Bearer {{tokenB}}
+
+### 3. Alice adds Bob as member (expect 201)
+POST {{api}}/boards/{{boardId}}/members
+Authorization: Bearer {{tokenA}}
+Content-Type: application/json
+
+{ "email": "bob@test.com" }
+
+### 4. Bob now sees the board (expect 200)
+GET {{api}}/boards
+Authorization: Bearer {{tokenB}}
+
+### 5. Bob creates a task (expect 201)
+# @name createTask
+POST {{api}}/boards/{{boardId}}/tasks
+Authorization: Bearer {{tokenB}}
+Content-Type: application/json
+
+{ "title": "Design homepage", "priority": "high", "assignee": "{{bobId}}" }
+
+###
+@taskId = {{createTask.response.body.id}}
+
+### 6. Move task to in_progress (expect 200)
+PATCH {{api}}/tasks/{{taskId}}
+Authorization: Bearer {{tokenB}}
+Content-Type: application/json
+
+{ "status": "in_progress" }
+
+### 7. List tasks on the board (expect 200)
+GET {{api}}/boards/{{boardId}}/tasks
+Authorization: Bearer {{tokenA}}
+
+### 8. Bob tries to delete the board (expect 403)
+DELETE {{api}}/boards/{{boardId}}
+Authorization: Bearer {{tokenB}}
+
+### 9. Alice removes Bob (expect 200)
+DELETE {{api}}/boards/{{boardId}}/members/{{bobId}}
+Authorization: Bearer {{tokenA}}
+
+### 10. Alice deletes the board (expect 204)
+DELETE {{api}}/boards/{{boardId}}
+Authorization: Bearer {{tokenA}}

@@ -1,29 +1,15 @@
 import { Server, Socket } from "socket.io";
-import jwt from "jsonwebtoken";
 import { presenceService } from "./presence.service";
 import { editingService } from "./editing.service";
-
-const JWT_SECRET = process.env.JWT_SECRET || "super_secret_hackathon_key";
+import { socketAuth } from "../../middleware/auth.middleware";
 
 export const setupSocketHandlers = (io: Server) => {
-    
-    // 1. JWT Authentication Middleware
-    io.use((socket, next) => {
-        const token = socket.handshake.auth.token;
-        if (!token) return next(new Error("Authentication error: No token"));
-
-        try {
-            const decoded: any = jwt.verify(token, JWT_SECRET);
-            socket.data.userId = decoded.id; // Attach secure user ID to the socket
-            next();
-        } catch (err) {
-            next(new Error("Authentication error: Invalid token"));
-        }
-    });
+    // 1. Centralized Socket.IO JWT Authentication Middleware
+    io.use(socketAuth);
 
     // 2. Event Listeners
     io.on("connection", (socket: Socket) => {
-        const userId = socket.data.userId; // Securely pulled from JWT, not the client
+        const userId = socket.data.userId; // Securely verified and attached by socketAuth
         console.log(`🔌 Client connected: ${socket.id} (User: ${userId})`);
 
         // --- Presence Events ---

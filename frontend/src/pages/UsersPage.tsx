@@ -1,5 +1,5 @@
-import UserPicker from "../components/users/UserPicker";
 import type { User } from "../types/user.types";
+import UserPicker from "../components/users/UserPicker";
 
 export default function UsersPage() {
   const handleUsersChange = (users: User[]) => {
@@ -7,7 +7,17 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA] p-6">
+    <div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold tracking-tight text-black">
+          Team Members
+        </h1>
+
+        <p className="mt-1 text-sm text-gray-500">
+          Find users and add them to your team.
+        </p>
+      </div>
+
       <UserPicker onChange={handleUsersChange} />
     </div>
   );
