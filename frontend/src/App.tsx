@@ -1,9 +1,10 @@
-
 import { useState } from "react";
 
 import AppLayout from "./components/layout/AppLayout";
 import type { Page } from "./components/layout/Sidebar";
 
+import DashboardPage from "./pages/DashboardPage";
+import BoardPage from "./pages/BoardPage";
 import UsersPage from "./pages/UsersPage";
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
   const renderPage = () => {
     switch (activePage) {
       /* ── Core pages ── */
+
       case "dashboard":
         return <DashboardPage onNavigate={setActivePage} />;
 
@@ -25,82 +27,44 @@ export default function App() {
       case "team-boards":
         return <UsersPage />;
 
-      case "dashboard":
-        return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Dashboard
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Welcome to SyncBoard.
-            </p>
-          </div>
-        );
-
       case "recent":
         return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Recent
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Recently viewed items will appear here.
-            </p>
-          </div>
+          <PagePlaceholder
+            title="Recent"
+            description="Recently viewed items will appear here."
+          />
         );
 
       case "favorites":
         return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Favorites
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Your favorite items will appear here.
-            </p>
-          </div>
+          <PagePlaceholder
+            title="Favorites"
+            description="Your favorite items will appear here."
+          />
         );
 
       case "settings":
         return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Settings
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Settings will be implemented later.
-            </p>
-          </div>
+          <PagePlaceholder
+            title="Settings"
+            description="Settings will be implemented later."
+          />
         );
 
       case "help":
         return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Help
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Help center will be implemented later.
-            </p>
-          </div>
+          <PagePlaceholder
+            title="Help"
+            description="Help center will be implemented later."
+          />
         );
 
       case "profile":
         return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Profile
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Your profile will be implemented later.
-            </p>
-          </div>
+          <PagePlaceholder
+            title="Profile"
+            description="Your profile will be implemented later."
+          />
         );
 
       default:
@@ -138,4 +102,3 @@ function PagePlaceholder({
     </section>
   );
 }
-
