@@ -24,7 +24,9 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/board" element={<ProtectedRoute><BoardPlaceholder /></ProtectedRoute>} />
+        <Route path="/board" element={<ProtectedRoute>
+          <BoardPlaceholder />
+          </ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/board" replace />} />
       </Routes>
     </BrowserRouter>
