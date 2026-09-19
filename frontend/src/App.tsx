@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "./stores";
+import { fetchMe, logoutUser } from "./stores/authSlice";
 
 import AppLayout from "./components/layout/AppLayout";
 import type { Page } from "./components/layout/Sidebar";
@@ -6,18 +8,31 @@ import type { Page } from "./components/layout/Sidebar";
 import DashboardPage from "./pages/DashboardPage";
 import BoardPage from "./pages/BoardPage";
 import UsersPage from "./pages/UsersPage";
+import AuthPage from "./pages/Auth";
 
 export default function App() {
+  const dispatch = useAppDispatch();
+  const { user, token } = useAppSelector((state) => state.auth);
   const [activePage, setActivePage] = useState<Page>("dashboard");
 
+  // Attempt to re-hydrate current user from session on start
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchMe());
+    }
+  }, [dispatch, token]);
+
   const handleLogout = () => {
-    console.log("Logout clicked");
+    dispatch(logoutUser());
   };
+
+  // Auth Guard: If not logged in, show Auth Page
+  if (!token && !user) {
+    return <AuthPage />;
+  }
 
   const renderPage = () => {
     switch (activePage) {
-      /* ── Core pages ── */
-
       case "dashboard":
         return <DashboardPage onNavigate={setActivePage} />;
 
@@ -63,7 +78,7 @@ export default function App() {
         return (
           <PagePlaceholder
             title="Profile"
-            description="Your profile will be implemented later."
+            description="Manage your account profile and preferences."
           />
         );
 
@@ -91,14 +106,9 @@ function PagePlaceholder({
   description: string;
 }) {
   return (
-    <section>
-      <h1 className="text-2xl font-bold text-black">
-        {title}
-      </h1>
-
-      <p className="mt-1 text-sm text-gray-500">
-        {description}
-      </p>
+    <section className="rounded-2xl border border-gray-200 bg-white p-8">
+      <h1 className="text-2xl font-bold text-black">{title}</h1>
+      <p className="mt-1 text-sm text-gray-500">{description}</p>
     </section>
   );
 }

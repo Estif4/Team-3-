@@ -11,6 +11,7 @@ import {
   LogOut,
   User,
 } from "lucide-react";
+import { useAppSelector } from "../../stores";
 
 export type Page =
   | "dashboard"
@@ -80,6 +81,10 @@ export default function Sidebar({
   onPageChange,
   onLogout,
 }: SidebarProps) {
+  const { user } = useAppSelector((s) => s.auth);
+  const userName = user?.displayName || user?.name || "User";
+  const userInitial = userName.charAt(0).toUpperCase();
+
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-gray-200 bg-white">
       {/* Logo */}
@@ -189,18 +194,21 @@ export default function Sidebar({
           ].join(" ")}
         >
           {/* Avatar */}
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black text-sm font-semibold text-white">
-            T
+          <div
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
+            style={{ backgroundColor: user?.avatarColor || "#0572B8" }}
+          >
+            {userInitial}
           </div>
 
           {/* User info */}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-black">
-              Tsi
+              {userName}
             </p>
 
             <p className="truncate text-xs text-gray-500">
-              Profile
+              {user?.email || "Profile"}
             </p>
           </div>
 

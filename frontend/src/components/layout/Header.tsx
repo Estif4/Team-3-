@@ -3,6 +3,7 @@ import {
   ChevronDown,
   Search,
 } from "lucide-react";
+import { useAppSelector } from "../../stores";
 
 type HeaderProps = {
   currentPage: string;
@@ -11,6 +12,10 @@ type HeaderProps = {
 export default function Header({
   currentPage,
 }: HeaderProps) {
+  const { user } = useAppSelector((s) => s.auth);
+  const userName = user?.displayName || user?.name || "User";
+  const userInitial = userName.charAt(0).toUpperCase();
+
   return (
     <header className="fixed left-64 right-0 top-0 z-30 h-16 border-b border-gray-200 bg-white">
       <div className="flex h-full items-center justify-between gap-4 px-6">
@@ -55,10 +60,11 @@ export default function Header({
           {/* Online teammates */}
           <div className="hidden items-center -space-x-2 md:flex">
             <div
-              title="Tsi - Online"
-              className="relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-black text-xs font-semibold text-white"
+              title={`${userName} - Online`}
+              className="relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-white text-xs font-semibold text-white"
+              style={{ backgroundColor: user?.avatarColor || "#0572B8" }}
             >
-              T
+              {userInitial}
               <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500" />
             </div>
 
@@ -99,15 +105,18 @@ export default function Header({
             className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#0572B8]/30"
           >
             <div className="relative">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-xs font-semibold text-white">
-                T
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold text-white"
+                style={{ backgroundColor: user?.avatarColor || "#0572B8" }}
+              >
+                {userInitial}
               </div>
 
               <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500" />
             </div>
 
             <span className="hidden text-sm font-medium text-black lg:block">
-              Tsi
+              {userName}
             </span>
 
             <ChevronDown

@@ -5,7 +5,8 @@ import { cookieOptions } from "../../middleware/auth.middleware";
 export class AuthController {
     static async register(req: Request, res: Response) {
         try {
-            const { displayName, email, password, role, avatarColor } = req.body;
+            const displayName = req.body.displayName || req.body.name;
+            const { email, password, role, avatarColor } = req.body;
             const result = await AuthService.register({ displayName, email, password, role, avatarColor });
 
             // Set HttpOnly cookie

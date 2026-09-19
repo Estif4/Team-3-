@@ -101,6 +101,8 @@ const statusMeta: Record<
 
 export default function DashboardPage({ onNavigate }: DashboardPageProps) {
   const { tasks } = useAppSelector((s) => s.board);
+  const { user } = useAppSelector((s) => s.auth);
+  const userName = user?.displayName || user?.name || "there";
 
   /* ── stats ── */
   const stats = useMemo(
@@ -158,7 +160,7 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
               {formatDate()}
             </p>
             <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
-              {greeting()}, Tsi 👋
+              {greeting()}, {userName} 👋
             </h1>
             <p className="mt-1 text-sm text-blue-100">
               {stats.progress > 0

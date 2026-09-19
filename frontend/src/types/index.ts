@@ -7,8 +7,11 @@ export interface FieldError {
 
 export interface User {
   _id: string;
-  name: string;
+  displayName?: string;
+  name?: string;
   email: string;
+  role?: string;
+  avatarColor?: string;
   avatar?: string;
 }
 
@@ -19,8 +22,10 @@ export interface AuthResponse {
 
 export interface RegisterPayload {
   name: string;
+  displayName?: string;
   email: string;
   password: string;
+  avatarColor?: string;
 }
 
 export interface LoginPayload {

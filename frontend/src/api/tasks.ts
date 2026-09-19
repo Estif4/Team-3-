@@ -1,116 +1,35 @@
+import { api } from "./axios";
 import type {
     Task,
     CreateTaskData,
     UpdateTaskData,
 } from "../stores/boardSlice";
 
-const API_URL =
-    import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
-async function handleResponse(response: Response) {
-    const data = await response.json().catch(() => null);
-
-    if (!response.ok) {
-        throw new Error(
-            data?.message ||
-            data?.error ||
-            "Something went wrong"
-        );
-    }
-
-    return data;
+export async function getBoardTasks(boardId: string): Promise<Task[]> {
+    const { data } = await api.get<any>(`/boards/${boardId}/tasks`);
+    return Array.isArray(data) ? data : data.tasks || [];
 }
 
-export async function getBoardTasks(
-    boardId: string
-): Promise<Task[]> {
-    const response = await fetch(
-        `${API_URL}/boards/${boardId}/tasks`,
-        {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }
-    );
-
-    const data = await handleResponse(response);
-
-    return data.tasks || data;
-}
-
-export async function getTask(
-    boardId: string,
-    taskId: string
-): Promise<Task> {
-    const response = await fetch(
-        `${API_URL}/boards/${boardId}/tasks/${taskId}`,
-        {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }
-    );
-
-    const data = await handleResponse(response);
-
+export async function getTask(_boardId: string, taskId: string): Promise<Task> {
+    const { data } = await api.get<any>(`/tasks/${taskId}`);
     return data.task || data;
 }
 
-export async function createTask(
-    taskData: CreateTaskData
-): Promise<Task> {
-    const response = await fetch(
-        `${API_URL}/boards/${taskData.board}/tasks`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(taskData),
-        }
-    );
-
-    const data = await handleResponse(response);
-
+export async function createTask(taskData: CreateTaskData): Promise<Task> {
+    const { board, ...rest } = taskData;
+    const { data } = await api.post<any>(`/boards/${board}/tasks`, rest);
     return data.task || data;
 }
 
 export async function updateTask(
-    boardId: string,
+    _boardId: string,
     taskId: string,
     taskData: UpdateTaskData
 ): Promise<Task> {
-    const response = await fetch(
-        `${API_URL}/boards/${boardId}/tasks/${taskId}`,
-        {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(taskData),
-        }
-    );
-
-    const data = await handleResponse(response);
-
+    const { data } = await api.patch<any>(`/tasks/${taskId}`, taskData);
     return data.task || data;
 }
 
-export async function deleteTask(
-    boardId: string,
-    taskId: string
-): Promise<void> {
-    const response = await fetch(
-        `${API_URL}/boards/${boardId}/tasks/${taskId}`,
-        {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }
-    );
-
-    await handleResponse(response);
+export async function deleteTask(_boardId: string, taskId: string): Promise<void> {
+    await api.delete(`/tasks/${taskId}`);
 }

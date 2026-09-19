@@ -1,9 +1,10 @@
-import axios from 'axios'
+import axios from 'axios';
 import type { FieldError } from '../types'
+
 
 export const TOKEN_KEY = 'syncboard_token'
 
-export const api = axios.create({ baseURL: '/api' })
+export const api = axios.create({ baseURL: '/api', withCredentials: true })
 
 // attach the JWT to every request automatically
 api.interceptors.request.use((config) => {

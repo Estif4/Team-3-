@@ -8,13 +8,14 @@ export interface ValidationError {
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const validateRegister = (req: Request, res: Response, next: NextFunction): void => {
-  const { displayName, email, password } = req.body;
+  const rawName = req.body.displayName || req.body.name;
+  const { email, password } = req.body;
   const errors: ValidationError[] = [];
 
-  if (!displayName || typeof displayName !== "string" || displayName.trim().length < 2) {
-    errors.push({ field: "displayName", message: "Display name must be at least 2 characters long." });
-  } else if (displayName.trim().length > 50) {
-    errors.push({ field: "displayName", message: "Display name cannot exceed 50 characters." });
+  if (!rawName || typeof rawName !== "string" || rawName.trim().length < 2) {
+    errors.push({ field: "displayName", message: "Name must be at least 2 characters long." });
+  } else if (rawName.trim().length > 50) {
+    errors.push({ field: "displayName", message: "Name cannot exceed 50 characters." });
   }
 
   if (!email || typeof email !== "string" || !EMAIL_REGEX.test(email.trim())) {
