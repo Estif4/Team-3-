@@ -9,14 +9,16 @@ import { setupSocketHandlers } from "./modules/collaboration/collaboration.socke
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
+const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
 
 // Create HTTP Server wrapping Express app
 const server = http.createServer(app);
 
-// Initialize Socket.IO with CORS support for frontend clients
+// Initialize Socket.IO with CORS and credentials support for cookies
 const io = new SocketIOServer(server, {
   cors: {
-    origin: "*",
+    origin: clientUrl,
+    credentials: true,
     methods: ["GET", "POST"],
   },
 });

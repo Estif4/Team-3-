@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, CookieOptions } from "express";
 import jwt from "jsonwebtoken";
 import { Socket } from "socket.io";
 
@@ -15,6 +15,16 @@ export interface AuthUserPayload {
 export interface AuthRequest extends Request {
   user: AuthUserPayload;
 }
+
+/**
+ * Standard HttpOnly Cookie Options
+ */
+export const cookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
 
 /**
  * Shared token verification helper used across HTTP and WebSockets
@@ -37,20 +47,23 @@ export const verifyToken = (token: string): AuthUserPayload => {
 
 /**
  * Express HTTP Authentication Middleware
+ * Checks HttpOnly cookie first, then falls back to Authorization Bearer header
  */
 export const requireAuth = (
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  const authHeader = req.headers.authorization;
+  let token = req.cookies?.token;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!token && req.headers.authorization?.startsWith("Bearer ")) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  if (!token) {
     res.status(401).json({ error: "Access denied. No token provided." });
     return;
   }
-
-  const token = authHeader.split(" ")[1];
 
   try {
     const user = verifyToken(token);
@@ -63,12 +76,24 @@ export const requireAuth = (
 
 /**
  * Socket.IO Authentication Middleware
+ * Checks handshake auth token or cookie header
  */
 export const socketAuth = (
   socket: Socket,
   next: (err?: Error) => void
 ): void => {
-  const token = socket.handshake.auth.token;
+  let token = socket.handshake.auth?.token;
+
+  if (!token && socket.handshake.headers.cookie) {
+    const cookies = socket.handshake.headers.cookie.split(";");
+    for (const c of cookies) {
+      const [key, value] = c.trim().split("=");
+      if (key === "token") {
+        token = decodeURIComponent(value);
+        break;
+      }
+    }
+  }
 
   if (!token) {
     return next(new Error("Authentication error: No token provided"));
