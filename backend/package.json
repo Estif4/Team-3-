@@ -9,7 +9,12 @@
     "start": "node dist/index.js",
     "lint": "tsc --noEmit"
   },
-  "keywords": ["mern", "typescript", "express", "mongodb"],
+  "keywords": [
+    "mern",
+    "typescript",
+    "express",
+    "mongodb"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -19,11 +24,14 @@
     "mongoose": "^8.5.1"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.14.11",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.25",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20.19.43",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
   }
 }
