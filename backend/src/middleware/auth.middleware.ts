@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { Socket } from "socket.io";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_super_secret_hackathon_key";
 
@@ -15,6 +16,28 @@ export interface AuthRequest extends Request {
   user: AuthUserPayload;
 }
 
+/**
+ * Shared token verification helper used across HTTP and WebSockets
+ */
+export const verifyToken = (token: string): AuthUserPayload => {
+  const decoded = jwt.verify(token, JWT_SECRET) as any;
+  const userId = decoded.userId || decoded.id;
+
+  if (!userId) {
+    throw new Error("Invalid token payload.");
+  }
+
+  return {
+    ...decoded,
+    id: userId,
+    userId: userId,
+    role: decoded.role || "MEMBER",
+  };
+};
+
+/**
+ * Express HTTP Authentication Middleware
+ */
 export const requireAuth = (
   req: Request,
   res: Response,
@@ -30,24 +53,34 @@ export const requireAuth = (
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    const userId = decoded.userId || decoded.id;
-
-    if (!userId) {
-      res.status(401).json({ error: "Invalid token payload." });
-      return;
-    }
-
-    (req as AuthRequest).user = {
-      ...decoded,
-      id: userId,
-      userId: userId,
-      role: decoded.role || "MEMBER",
-    };
-
+    const user = verifyToken(token);
+    (req as AuthRequest).user = user;
     next();
   } catch (error: any) {
     res.status(401).json({ error: "Invalid or expired token." });
+  }
+};
+
+/**
+ * Socket.IO Authentication Middleware
+ */
+export const socketAuth = (
+  socket: Socket,
+  next: (err?: Error) => void
+): void => {
+  const token = socket.handshake.auth.token;
+
+  if (!token) {
+    return next(new Error("Authentication error: No token provided"));
+  }
+
+  try {
+    const user = verifyToken(token);
+    socket.data.userId = user.userId;
+    socket.data.user = user;
+    next();
+  } catch (error: any) {
+    next(new Error("Authentication error: Invalid or expired token"));
   }
 };
 
