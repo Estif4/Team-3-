@@ -1,3 +1,4 @@
+/// <reference path="./types/express.d.ts" />
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
 import { Request, Response } from "express";
@@ -31,12 +32,11 @@ app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "MERN backend is running" });
 });
 
-
 connectDb()
   .then(() => {
     console.log("MongoDB Connected Successfully");
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+    server.listen(PORT, () => {
+      console.log(`Server & WebSockets running on http://localhost:${PORT}`);
     });
   })
   .catch((error) => {
