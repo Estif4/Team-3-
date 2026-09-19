@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
+import { IUserDocument } from "./user.types";
 
-
-const UserSchema = new Schema(
+const UserSchema = new Schema<IUserDocument>(
 {
     // User basic information
     displayName: {
@@ -70,7 +70,7 @@ const UserSchema = new Schema(
 
 
 
-export const User = mongoose.model(
+export const User = mongoose.model<IUserDocument>(
     "User",
     UserSchema
 );

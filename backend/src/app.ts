@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 
 import authRoutes from "./modules/auth/auth.routes";
+import userRoutes from "./modules/users/user.routes";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 
 app.get("/health", (req: Request, res: Response) => {
