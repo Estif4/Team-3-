@@ -8,7 +8,8 @@ type SelectedUsersProps = {
 
 function getInitials(name: string) {
   return name
-    .split(" ")
+    .trim()
+    .split(/\s+/)
     .map((part) => part[0])
     .join("")
     .slice(0, 2)
@@ -21,9 +22,13 @@ export default function SelectedUsers({
 }: SelectedUsersProps) {
   if (users.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4 text-center">
-        <p className="text-sm text-gray-500">
-          No users added yet.
+      <div className="rounded-lg border border-dashed border-gray-300 bg-[#F7F8FA] px-4 py-6 text-center">
+        <p className="text-sm font-medium text-gray-600">
+          No users selected
+        </p>
+
+        <p className="mt-1 text-xs text-gray-400">
+          Add users from the list above.
         </p>
       </div>
     );
@@ -36,12 +41,15 @@ export default function SelectedUsers({
           key={user.id}
           className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3"
         >
-          {/* Avatar */}
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0572B8] text-xs font-semibold text-white">
+          <div
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white"
+            style={{
+              backgroundColor: user.avatarColor,
+            }}
+          >
             {getInitials(user.name)}
           </div>
 
-          {/* User info */}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-black">
               {user.name}
@@ -52,12 +60,11 @@ export default function SelectedUsers({
             </p>
           </div>
 
-          {/* Remove */}
           <button
             type="button"
             onClick={() => onRemove(user.id)}
-            className="rounded-md p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-red-600"
             aria-label={`Remove ${user.name}`}
+            className="rounded-md p-1.5 text-gray-400 transition hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500/20"
           >
             <X className="h-4 w-4" />
           </button>

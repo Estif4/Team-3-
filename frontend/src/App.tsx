@@ -3,7 +3,6 @@ import { useState } from "react";
 
 import AppLayout from "./components/layout/AppLayout";
 import type { Page } from "./components/layout/Sidebar";
-
 import UsersPage from "./pages/UsersPage";
 
 export default function App() {
@@ -21,80 +20,50 @@ export default function App() {
 
       case "dashboard":
         return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Dashboard
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Welcome to SyncBoard.
-            </p>
-          </div>
+          <PagePlaceholder
+            title="Dashboard"
+            description="Dashboard UI will be implemented next."
+          />
         );
 
       case "recent":
         return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Recent
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Recently viewed items will appear here.
-            </p>
-          </div>
+          <PagePlaceholder
+            title="Recent"
+            description="Recently viewed items will appear here."
+          />
         );
 
       case "favorites":
         return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Favorites
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Your favorite items will appear here.
-            </p>
-          </div>
+          <PagePlaceholder
+            title="Favorites"
+            description="Your favorite items will appear here."
+          />
         );
 
       case "settings":
         return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Settings
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Settings will be implemented later.
-            </p>
-          </div>
+          <PagePlaceholder
+            title="Settings"
+            description="Settings UI will be implemented later."
+          />
         );
 
       case "help":
         return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Help
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Help center will be implemented later.
-            </p>
-          </div>
+          <PagePlaceholder
+            title="Help"
+            description="Help UI will be implemented later."
+          />
         );
 
       case "profile":
         return (
-          <div>
-            <h1 className="text-2xl font-bold text-black">
-              Profile
-            </h1>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Your profile will be implemented later.
-            </p>
-          </div>
+          <PagePlaceholder
+            title="Profile"
+            description="Profile UI will be implemented later."
+          />
         );
 
       default:
@@ -112,3 +81,24 @@ export default function App() {
     </AppLayout>
   );
 }
+
+function PagePlaceholder({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <section>
+      <h1 className="text-2xl font-bold text-black">
+        {title}
+      </h1>
+
+      <p className="mt-1 text-sm text-gray-500">
+        {description}
+      </p>
+    </section>
+  );
+}
+

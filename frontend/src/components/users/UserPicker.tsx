@@ -3,12 +3,13 @@ import {
   Check,
   Loader2,
   Plus,
+  RefreshCw,
   Search,
   UserPlus,
 } from "lucide-react";
 
-import type { User } from "../../types/user.types";
 import { fetchUsers } from "../data/users.mock";
+import type { User } from "../../types/user.types";
 import SelectedUsers from "./SelectedUsers";
 
 type UserPickerProps = {
@@ -18,7 +19,8 @@ type UserPickerProps = {
 
 function getInitials(name: string) {
   return name
-    .split(" ")
+    .trim()
+    .split(/\s+/)
     .map((part) => part[0])
     .join("")
     .slice(0, 2)
@@ -33,7 +35,7 @@ function getStatusText(status: User["status"]) {
     case "away":
       return "Away";
 
-    default:
+    case "offline":
       return "Offline";
   }
 }
@@ -50,23 +52,24 @@ export default function UserPicker({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const data = await fetchUsers();
+
+      setUsers(data);
+    } catch {
+      setError("Failed to load users.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        setLoading(true);
-        setError("");
-
-        const data = await fetchUsers();
-
-        setUsers(data);
-      } catch {
-        setError("Failed to load users.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUsers();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadUsers();
   }, []);
 
   const filteredUsers = useMemo(() => {
@@ -85,7 +88,9 @@ export default function UserPicker({
   }, [users, search]);
 
   const isSelected = (userId: string) => {
-    return selectedUsers.some((user) => user.id === userId);
+    return selectedUsers.some(
+      (user) => user.id === userId,
+    );
   };
 
   const handleAddUser = (user: User) => {
@@ -93,25 +98,23 @@ export default function UserPicker({
       return;
     }
 
-    const updatedUsers = [...selectedUsers, user];
+    const nextUsers = [...selectedUsers, user];
 
-    setSelectedUsers(updatedUsers);
-
-    onChange?.(updatedUsers);
+    setSelectedUsers(nextUsers);
+    onChange?.(nextUsers);
   };
 
   const handleRemoveUser = (userId: string) => {
-    const updatedUsers = selectedUsers.filter(
+    const nextUsers = selectedUsers.filter(
       (user) => user.id !== userId,
     );
 
-    setSelectedUsers(updatedUsers);
-
-    onChange?.(updatedUsers);
+    setSelectedUsers(nextUsers);
+    onChange?.(nextUsers);
   };
 
   return (
-    <div className="w-full max-w-2xl rounded-xl border border-gray-200 bg-white">
+    <div className="w-full max-w-2xl overflow-hidden rounded-xl border border-gray-200 bg-white">
       {/* Header */}
       <div className="border-b border-gray-200 p-5">
         <div className="flex items-center gap-3">
@@ -128,7 +131,7 @@ export default function UserPicker({
             </h2>
 
             <p className="text-sm text-gray-500">
-              Select users to add to your team.
+              Find users and add them to your team.
             </p>
           </div>
         </div>
@@ -145,9 +148,11 @@ export default function UserPicker({
           <input
             type="text"
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+            }}
             placeholder="Search users by name or email..."
-            className="h-10 w-full rounded-lg border border-gray-200 bg-gray-50 pl-10 pr-4 text-sm text-black outline-none transition placeholder:text-gray-400 focus:border-[#0572B8] focus:bg-white focus:ring-2 focus:ring-[#0572B8]/10"
+            className="h-11 w-full rounded-lg border border-gray-200 bg-[#F7F8FA] pl-10 pr-4 text-sm text-black outline-none transition placeholder:text-gray-400 focus:border-[#0572B8] focus:bg-white focus:ring-2 focus:ring-[#0572B8]/10"
           />
         </div>
       </div>
@@ -159,127 +164,154 @@ export default function UserPicker({
             Available Users
           </h3>
 
-          <span className="text-xs text-gray-500">
-            {filteredUsers.length} users
-          </span>
+          {!loading && !error && (
+            <span className="text-xs text-gray-500">
+              {filteredUsers.length} users
+            </span>
+          )}
         </div>
 
         {/* Loading */}
         {loading && (
-          <div className="flex items-center justify-center py-10">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <Loader2 className="h-4 w-4 animate-spin text-[#0572B8]" />
+          <div className="flex flex-col items-center justify-center py-10">
+            <Loader2
+              className="h-6 w-6 animate-spin text-[#0572B8]"
+              strokeWidth={1.8}
+            />
+
+            <p className="mt-3 text-sm text-gray-500">
               Loading users...
-            </div>
+            </p>
           </div>
         )}
 
         {/* Error */}
         {!loading && error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-            <p className="text-sm text-red-600">
+          <div className="rounded-lg border border-gray-200 bg-[#F7F8FA] p-5">
+            <p className="text-sm font-medium text-black">
+              Couldn't load users
+            </p>
+
+            <p className="mt-1 text-sm text-gray-500">
               {error}
             </p>
+
+            <button
+              type="button"
+              onClick={() => {
+                void loadUsers();
+              }}
+              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#0572B8] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#045f98] focus:outline-none focus:ring-2 focus:ring-[#0572B8]/30"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Try Again
+            </button>
           </div>
         )}
 
         {/* Empty */}
-        {!loading && !error && filteredUsers.length === 0 && (
-          <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
-            <p className="text-sm font-medium text-black">
-              No users found
-            </p>
+        {!loading &&
+          !error &&
+          filteredUsers.length === 0 && (
+            <div className="rounded-lg border border-dashed border-gray-300 bg-[#F7F8FA] p-8 text-center">
+              <p className="text-sm font-medium text-black">
+                No users found
+              </p>
 
-            <p className="mt-1 text-xs text-gray-500">
-              Try a different name or email.
-            </p>
-          </div>
-        )}
+              <p className="mt-1 text-xs text-gray-500">
+                Try a different name or email.
+              </p>
+            </div>
+          )}
 
         {/* User list */}
-        {!loading && !error && filteredUsers.length > 0 && (
-          <div className="space-y-2">
-            {filteredUsers.map((user) => {
-              const selected = isSelected(user.id);
+        {!loading &&
+          !error &&
+          filteredUsers.length > 0 && (
+            <div className="max-h-[430px] space-y-2 overflow-y-auto pr-1">
+              {filteredUsers.map((user) => {
+                const selected = isSelected(user.id);
 
-              return (
-                <div
-                  key={user.id}
-                  className={[
-                    "flex items-center gap-3 rounded-lg border p-3 transition",
-                    selected
-                      ? "border-[#0572B8]/30 bg-[#F7FBFD]"
-                      : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50",
-                  ].join(" ")}
-                >
-                  {/* Avatar */}
-                  <div className="relative shrink-0">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-xs font-semibold text-white">
-                      {getInitials(user.name)}
+                return (
+                  <div
+                    key={user.id}
+                    className={[
+                      "flex items-center gap-3 rounded-lg border p-3 transition",
+                      selected
+                        ? "border-[#0572B8]/30 bg-[#F7FBFD]"
+                        : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50",
+                    ].join(" ")}
+                  >
+                    {/* Avatar */}
+                    <div className="relative shrink-0">
+                      <div
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-xs font-semibold text-white"
+                        style={{
+                          backgroundColor: user.avatarColor,
+                        }}
+                      >
+                        {getInitials(user.name)}
+                      </div>
+
+                      {user.status === "online" && (
+                        <span
+                          className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500"
+                          title="Online"
+                        />
+                      )}
                     </div>
 
-                    <span
-                      className={[
-                        "absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white",
-                        user.status === "online" &&
-                          "bg-green-500",
-                        user.status === "away" &&
-                          "bg-yellow-500",
-                        user.status === "offline" &&
-                          "bg-gray-400",
-                      ].join(" ")}
-                    />
-                  </div>
-
-                  {/* Info */}
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-black">
-                      {user.name}
-                    </p>
-
-                    <div className="flex items-center gap-2">
-                      <p className="truncate text-xs text-gray-500">
-                        {user.email}
+                    {/* User info */}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-black">
+                        {user.name}
                       </p>
 
-                      <span className="hidden text-xs text-gray-400 sm:inline">
-                        •
-                      </span>
+                      <div className="mt-0.5 flex items-center gap-2">
+                        <p className="truncate text-xs text-gray-500">
+                          {user.email}
+                        </p>
 
-                      <span className="hidden text-xs text-gray-500 sm:inline">
-                        {getStatusText(user.status)}
-                      </span>
+                        <span className="hidden text-xs text-gray-400 sm:inline">
+                          •
+                        </span>
+
+                        <span className="hidden text-xs text-gray-500 sm:inline">
+                          {getStatusText(user.status)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Add / Added */}
-                  {selected ? (
-                    <button
-                      type="button"
-                      disabled
-                      className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-xs font-medium text-gray-500"
-                    >
-                      <Check className="h-3.5 w-3.5" />
-                      Added
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => handleAddUser(user)}
-                      className="flex items-center gap-1.5 rounded-lg bg-[#0572B8] px-3 py-2 text-xs font-medium text-white transition hover:bg-[#045f98] focus:outline-none focus:ring-2 focus:ring-[#0572B8]/30"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      Add
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+                    {/* Add / Added */}
+                    {selected ? (
+                      <button
+                        type="button"
+                        disabled
+                        className="flex shrink-0 items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-xs font-medium text-gray-500"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        Added
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleAddUser(user);
+                        }}
+                        className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[#0572B8] px-3 py-2 text-xs font-medium text-white transition hover:bg-[#045f98] focus:outline-none focus:ring-2 focus:ring-[#0572B8]/30"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        Add
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
       </div>
 
-      {/* Selected users */}
+      {/* Selected */}
       <div className="border-t border-gray-200 p-5">
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-black">
