@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import dotenv from "dotenv";
 import { connectDb } from "./config/db";
 import app from "./app";
+
 dotenv.config();
 
 
