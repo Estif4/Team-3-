@@ -31,13 +31,15 @@ app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "MERN backend is running" });
 });
 
-// Connect to MongoDB & Start Server
-connectDb().then(() => {
+
+connectDb()
+  .then(() => {
     console.log("MongoDB Connected Successfully");
-    server.listen(PORT, () => {
-        console.log(`Server & WebSockets running on http://localhost:${PORT}`);
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
     });
-}).catch((error) => {
+  })
+  .catch((error) => {
     console.error("MongoDB Connection Failed:", error.message);
     process.exit(1);
-});
+  });

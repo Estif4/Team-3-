@@ -3,7 +3,6 @@ import { IUserDocument } from "./user.types";
 
 const UserSchema = new Schema<IUserDocument>(
 {
-    // User basic information
     displayName: {
         type: String,
         required: true,

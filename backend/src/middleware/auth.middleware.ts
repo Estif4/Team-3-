@@ -52,7 +52,7 @@ export const verifyToken = (token: string): AuthUserPayload => {
 export const requireAuth = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   let token = req.cookies?.token;
 
@@ -80,7 +80,7 @@ export const requireAuth = (
  */
 export const socketAuth = (
   socket: Socket,
-  next: (err?: Error) => void
+  next: (err?: Error) => void,
 ): void => {
   let token = socket.handshake.auth?.token;
 
@@ -113,7 +113,12 @@ export const restrictTo = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     const authReq = req as AuthRequest;
     if (!authReq.user || !roles.includes(authReq.user.role || "")) {
-      res.status(403).json({ error: "Forbidden: You do not have permission to perform this action." });
+      res
+        .status(403)
+        .json({
+          error:
+            "Forbidden: You do not have permission to perform this action.",
+        });
       return;
     }
     next();

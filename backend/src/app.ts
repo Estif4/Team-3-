@@ -1,10 +1,14 @@
-import express, { Application, Request, Response, NextFunction } from "express";
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 
 import authRoutes from "./modules/auth/auth.routes";
 import userRoutes from "./modules/users/user.routes";
+import boardRoutes from "./modules/boards/board.routes";
+import { taskRouter } from "./modules/tasks/task.routes";
+import { errorHandler } from "./middleware/errorHandler";
+import { notFound } from "./middleware/notFound";
 
 dotenv.config();
 
@@ -23,21 +27,24 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Auth & User routes (supports both /api and /api/v1 prefixes)
+app.get("/", (_req: Request, res: Response) => {
+  res.status(200).json({ success: true, message: "MERN backend is running" });
+});
+app.get("/health", (_req: Request, res: Response) => {
+  res
+    .status(200)
+    .json({ status: "success", message: "API is running smoothly" });
+});
+
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/v1/users", userRoutes);
+app.use("/api/boards", boardRoutes);
+app.use("/api/tasks", taskRouter);
 
-app.get("/health", (_req: Request, res: Response) => {
-  res.status(200).json({ status: "success", message: "API is running smoothly" });
-});
 
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  console.error("🔥 Error:", err.message);
-  res.status(err.status || 500).json({
-    error: err.message || "Internal Server Error",
-  });
-});
+app.use(notFound);
+app.use(errorHandler);
 
 export default app;
