@@ -1,1 +1,10 @@
+/* src/index.css */
 @import "tailwindcss";
+
+@theme {
+  --color-brand: #0572B8;
+  --color-brand-soft: #EAF4FB;
+  --color-surface: #F7F8FA;
+  --color-line: #E5E7EB;
+  --color-muted: #6B7280;
+}
