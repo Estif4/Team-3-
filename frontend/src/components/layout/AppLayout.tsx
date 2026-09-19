@@ -11,7 +11,8 @@ type AppLayoutProps = {
 
 const pageTitles: Record<Page, string> = {
   dashboard: "Dashboard",
-  "team-boards": "Engineering Team Board",
+  board: "Board",
+  "team-boards": "Team Members",
   recent: "Recent",
   favorites: "Favorites",
   settings: "Settings",

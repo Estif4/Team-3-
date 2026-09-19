@@ -3,6 +3,7 @@ import type { ElementType } from "react";
 import {
   LayoutDashboard,
   Kanban,
+  KanbanSquare,
   Clock3,
   Star,
   Settings,
@@ -13,6 +14,7 @@ import {
 
 export type Page =
   | "dashboard"
+  | "board"
   | "team-boards"
   | "recent"
   | "favorites"
@@ -39,8 +41,13 @@ const navigationItems: NavItem[] = [
     icon: LayoutDashboard,
   },
   {
+    id: "board",
+    label: "Board",
+    icon: KanbanSquare,
+  },
+  {
     id: "team-boards",
-    label: "Team Boards",
+    label: "Team Members",
     icon: Kanban,
   },
   {

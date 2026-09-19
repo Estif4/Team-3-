@@ -30,8 +30,8 @@ export const connectDb = async (): Promise<typeof mongoose> => {
       bufferCommands: false,
     };
 
-    cache.promise = mongoose.connect(MONGO_URI, opts).then((mongoose) => {
-      return mongoose;
+    cache.promise = mongoose.connect(MONGO_URI, opts).then((conn) => {
+      return conn;
     });
   }
 
