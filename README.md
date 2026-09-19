@@ -1,117 +1,97 @@
-# 🚀 Fullstack MERN Hackathon Starter Architecture
+# Hackathon Boilerplate
 
-A clean, modular, production-ready fullstack MERN template built with TypeScript, modern tooling, and repository patterns.
+## Problem Statement
 
----
+### Problem 1: Community Lost & Found
 
-## 📁 Project Architecture
+People lose items, while others find these items but have no easy way to connect them with their owners.
 
-```
-Hackaton/
-│
-├── frontend/                     # React 18 + Vite + TypeScript
-│   ├── src/
-│   │   ├── app/                  # Router, Global Providers & Zustand Store
-│   │   │   ├── router.tsx
-│   │   │   ├── providers.tsx
-│   │   │   └── store.ts
-│   │   │
-│   │   ├── assets/               # Static icons and images
-│   │   │   ├── images/
-│   │   │   └── icons/
-│   │   │
-│   │   ├── components/           # Shared reusable components
-│   │   │   ├── ui/               # Button, Input, Modal, etc.
-│   │   │   ├── forms/
-│   │   │   ├── tables/
-│   │   │   └── layouts/          # Navbar, Sidebar
-│   │   │
-│   │   ├── features/             # Domain Feature Modules
-│   │   │   ├── auth/             # API, Hooks, Components, Pages, Schemas, Types
-│   │   │   ├── users/            # API, Hooks, Components, Pages, Schemas, Types
-│   │   │   └── example-feature/  # Boilerplate CRUD feature
-│   │   │
-│   │   ├── hooks/                # Global custom hooks (useDebounce, usePagination)
-│   │   ├── lib/                  # Axios instance, QueryClient, Socket client
-│   │   ├── routes/               # ProtectedRoute & PublicRoute guards
-│   │   ├── types/                # Global TypeScript definitions
-│   │   ├── utils/                # Utility helpers (cn, formatting)
-│   │   ├── App.tsx               # Root application shell
-│   │   ├── main.tsx              # React DOM entrypoint
-│   │   └── index.css             # Tailwind base styles
-│   │
-│   ├── package.json
-│   ├── vite.config.ts
-│   └── tsconfig.json
-│
-└── backend/                      # Express + Node.js + MongoDB + TypeScript
-    ├── src/
-    │   ├── config/               # Environment, Mongo, Cloudinary
-    │   ├── database/             # Connection & database seed script
-    │   ├── lib/                  # JWT helpers, Winston logger, Mailer, Redis
-    │   ├── middlewares/          # Auth, Role, Error, Validation, Rate Limiter
-    │   ├── utils/                # API Response, Pagination, Bcrypt Encryption
-    │   ├── jobs/                 # Cron/Background job scheduler
-    │   ├── sockets/              # Socket.IO event handler
-    │   │
-    │   ├── modules/              # 3-Tier Layered Feature Modules
-    │   │   ├── auth/             # Controller -> Service -> Repository -> Model
-    │   │   ├── users/
-    │   │   └── example-module/
-    │   │
-    │   ├── routes/               # Central API router (/api/v1)
-    │   ├── app.ts                # Express app setup & middleware stack
-    │   └── server.ts             # HTTP server & database listener
-    │
-    ├── package.json
-    ├── tsconfig.json
-    └── .env.example
-```
+Build a Lost & Found platform where users can report lost/found items and search existing reports.
 
----
+#### Milestone 1: Basic CRUD (Score: 50%)
 
-## 📦 How to Install and Run
+Users can:
 
-### 1. Backend
-```bash
-cd backend
-npm install
-npm run dev
-```
-> The API server runs at `http://localhost:5000/api/v1`
+- Create a lost/found item report
+- View all reports
+- View a single report
+- Edit their report
+- Delete their report
 
-### 2. Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-> The Vite dev server runs at `http://localhost:5173`
+#### Milestone 2: Search & Filtering (Score: 30%)
 
----
+- Search by title/description
+- Filter by category
+- Filter by LOST/FOUND
+- Filter by location
+- Sort by date
 
-## ⚡ Adding a New Feature (30-Second Pattern)
+#### Milestone 3: Authentication & Ownership (Score: 20%)
 
-### Backend
-1. Create `backend/src/modules/<feature-name>/`:
-   - `<name>.types.ts`
-   - `<name>.model.ts`
-   - `<name>.validation.ts`
-   - `<name>.repository.ts`
-   - `<name>.service.ts`
-   - `<name>.controller.ts`
-   - `<name>.routes.ts`
-2. Register in `backend/src/routes/index.ts`:
-   ```ts
-   router.use('/<feature-name>', featureRoutes);
-   ```
+- User registration/login
+- Only the creator can edit/delete their report
+- Show the reporter's information
 
-### Frontend
-1. Create `frontend/src/features/<feature-name>/`:
-   - `types/`
-   - `schemas/`
-   - `api/`
-   - `hooks/`
-   - `components/`
-   - `pages/`
-2. Register route in `frontend/src/app/router.tsx`.
+#### Milestone 4: Matching (Bonus 20%)
+
+Suggest potentially matching reports.
+
+### Problem 2: Real-time Collaborative Task Board
+
+Build a real-time collaborative task board where multiple users can create, edit, move, and delete tasks together live.
+
+#### Milestone 1: Core CRUD + Persistence (Score: 40%)
+
+- Create, read, update, delete tasks
+- Move tasks between columns (To Do / In Progress / Done)
+- Data persists in MongoDB
+- Basic clean UI
+
+#### Milestone 2: Real-time Collaboration (Score: 35%)
+
+- Changes appear live for all connected users (no refresh)
+- Multiple users can work at the same time
+- Visual indication of who is online
+
+#### Milestone 3: Concurrent Safety & Presence (Score: 25%)
+
+- Safe concurrent editing (no data loss or corruption)
+- Show when someone else is currently editing a task
+- Basic authentication (display name or simple login)
+
+#### Bonus: Offline Support
+
+- Work offline and sync cleanly when back online
+- Basic conflict resolution
+
+### Problem 3: Smart Library Management System
+
+Build a library management system with clear roles and strict borrowing rules.
+
+#### Milestone 1: Basic CRUD + Roles (Score: 40%)
+
+- Librarians can add/edit/delete books and manage copies
+- Members can browse books and view their borrowed items
+- Simple authentication and role separation (Librarian vs Member)
+
+#### Milestone 2: Borrowing Logic & Rules (Score: 35%)
+
+- Members can borrow and return books
+- Enforce rules (max books per member, due dates, availability)
+- Prevent over-borrowing and negative stock
+
+#### Milestone 3: Concurrency + Dashboard (Score: 25%)
+
+- Safe concurrent borrowing (last copy cannot be taken by two people at once)
+- Librarian dashboard with key stats (total books, borrowed, overdue)
+- Clear overdue indicators
+
+#### Bonus
+
+- Real-time updates when books are borrowed/returned
+- Simple fine calculation for overdue books
+
+## Project Structure
+
+- `frontend/` - React frontend
+- `backend/` - TypeScript backend

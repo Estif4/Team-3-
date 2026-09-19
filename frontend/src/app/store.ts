@@ -1,51 +1,13 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { User } from '../types/index.js';
+import { configureStore } from "@reduxjs/toolkit";
+import genericReducer from "../features/generic/genericSlice";
 
-interface AuthState {
-  user: User | null;
-  accessToken: string | null;
-  refreshToken: string | null;
-  isAuthenticated: boolean;
-  setAuth: (user: User, accessToken: string, refreshToken: string) => void;
-  updateUser: (user: Partial<User>) => void;
-  logout: () => void;
-}
+export const store = configureStore({
+  reducer: {
+    generic: genericReducer,
+  },
+});
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      accessToken: null,
-      refreshToken: null,
-      isAuthenticated: false,
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 
-      setAuth: (user, accessToken, refreshToken) => {
-        localStorage.setItem('access_token', accessToken);
-        localStorage.setItem('refresh_token', refreshToken);
-        set({ user, accessToken, refreshToken, isAuthenticated: true });
-      },
-
-      updateUser: (updatedFields) => {
-        set((state) => ({
-          user: state.user ? { ...state.user, ...updatedFields } : null,
-        }));
-      },
-
-      logout: () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        set({
-          user: null,
-          accessToken: null,
-          refreshToken: null,
-          isAuthenticated: false,
-        });
-      },
-    }),
-    {
-      name: 'auth-storage',
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
-    }
-  )
-);
+export default store;
